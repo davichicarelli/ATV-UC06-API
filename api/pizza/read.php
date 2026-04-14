@@ -15,7 +15,7 @@ $db = $database->getConnection();
  
 // Instanciar o objeto Pizza
 $pizza = new Pizza($db);
-
+ 
 $pizza->idPizza = isset($_GET['id']) ? $_GET['id'] : null;
  
 if ($pizza->idPizza) {

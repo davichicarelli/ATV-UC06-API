@@ -1,5 +1,5 @@
 <?php
-
+ 
 class Bebida
 {
     public $conn;
@@ -8,21 +8,22 @@ class Bebida
     public $nome;
     public $tipo;
     public $valor;
-
+ 
     public function __construct($db)
     {
         $this->conn = $db;
     }
-
-    function read() {
+ 
+    function read()
+    {
         $query = "SELECT idBebida, nome, tipo, valor FROM " . $this->tabela . " ORDER BY valor ASC";
-
+ 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
-        return $stmt; 
+ 
+        return $stmt;
     }
-
+ 
     public function read_single()
     {
         $query = 'SELECT
@@ -45,5 +46,73 @@ class Bebida
         $this->nome = $row['nome'] ?? null;
         $this->tipo = $row['tipo'] ?? null;
         $this->valor = $row['valor'] ?? null;
+    }
+ 
+    // CREATE
+    public function create()
+    {
+        $query = 'INSERT INTO ' . $this->tabela . ' SET nome = :nome, tipo = :tipo, valor = :valor';
+ 
+        $stmt = $this->conn->prepare($query);
+ 
+        // Limpar dados
+        $this->nome = htmlspecialchars(strip_tags($this->nome));
+        $this->tipo = htmlspecialchars(strip_tags($this->tipo));
+        $this->valor = htmlspecialchars(strip_tags($this->valor));
+ 
+        // Bind
+        $stmt->bindParam(':nome', $this->nome);
+        $stmt->bindParam(':tipo', $this->tipo);
+        $stmt->bindParam(':valor', $this->valor);
+ 
+        if ($stmt->execute()) {
+            return true;
+        }
+ 
+        return false;
+    }
+ 
+    // UPDATE
+    public function update()
+    {
+        $query = 'UPDATE ' . $this->tabela . ' SET nome=:nome, tipo=:tipo, valor=:valor WHERE idBebida=:id';
+ 
+        $stmt = $this->conn->prepare($query);
+ 
+        // Limpar
+        $this->nome = htmlspecialchars(strip_tags($this->nome));
+        $this->tipo = htmlspecialchars(strip_tags($this->tipo));
+        $this->valor = htmlspecialchars(strip_tags($this->valor));
+        $this->idBebida = htmlspecialchars(strip_tags($this->idBebida));
+ 
+        // Bind
+        $stmt->bindParam(':nome', $this->nome);
+        $stmt->bindParam(':tipo', $this->tipo);
+        $stmt->bindParam(':valor', $this->valor);
+        $stmt->bindParam(':id', $this->idBebida);
+ 
+        if ($stmt->execute()) {
+            return true;
+        }
+ 
+        return false;
+    }
+ 
+    // DELETE
+    public function delete()
+    {
+        $query = 'DELETE FROM ' . $this->tabela . ' WHERE idBebida = :id';
+ 
+        $stmt = $this->conn->prepare($query);
+ 
+        $this->idBebida = htmlspecialchars(strip_tags($this->idBebida));
+ 
+        $stmt->bindParam(':id', $this->idBebida);
+ 
+        if ($stmt->execute()) {
+            return true;
+        }
+ 
+        return false;
     }
 }
